@@ -1,7 +1,11 @@
+
+
 import random
-import numpy as np
+# import numpy as np
 import torch
 from torch.autograd import Variable
+
+
 class ImagePool():
     def __init__(self, pool_size):
         self.pool_size = pool_size
@@ -14,6 +18,7 @@ class ImagePool():
             return images
         return_images = []
         for image in images.data:
+            # trans to 4D tensor
             image = torch.unsqueeze(image, 0)
             if self.num_imgs < self.pool_size:
                 self.num_imgs = self.num_imgs + 1

@@ -1,3 +1,5 @@
+
+
 import time
 from options.train_options import TrainOptions
 from data.data_loader import CreateDataLoader
@@ -8,7 +10,7 @@ opt = TrainOptions().parse()
 data_loader = CreateDataLoader(opt)
 dataset = data_loader.load_data()
 dataset_size = len(data_loader)
-print('#training images = %d' % dataset_size)
+print('#training set size = {} images'.format(dataset_size))
 
 model = create_model(opt)
 visualizer = Visualizer(opt)
