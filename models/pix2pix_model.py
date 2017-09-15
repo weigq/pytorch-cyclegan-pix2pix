@@ -21,7 +21,10 @@ class Pix2PixModel(BaseModel):
         self.fake_B = None
 
         self.netG = None  # G
+        self.optimizer_G = None
+
         self.netD = None  # D
+        self.optimizer_D = None
 
     def name(self):
         return 'Pix2PixModel'
@@ -54,10 +57,8 @@ class Pix2PixModel(BaseModel):
             self.criterionL1 = torch.nn.L1Loss()
 
             # initialize optimizers
-            self.optimizer_G = torch.optim.Adam(self.netG.parameters(),
-                                                lr=opt.lr, betas=(opt.beta1, 0.999))
-            self.optimizer_D = torch.optim.Adam(self.netD.parameters(),
-                                                lr=opt.lr, betas=(opt.beta1, 0.999))
+            self.optimizer_G = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+            self.optimizer_D = torch.optim.Adam(self.netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 
         print('---------- Networks initialized -------------')
         networks.print_network(self.netG)
@@ -119,6 +120,7 @@ class Pix2PixModel(BaseModel):
         self.loss_G.backward()
 
     def optimize_parameters(self):
+        # forward G to generate fake_B
         self.forward()
 
         self.optimizer_D.zero_grad()

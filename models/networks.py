@@ -22,11 +22,13 @@ def weights_init(m):
 
 def get_norm_layer(norm_type='instance'):
     if norm_type == 'batch':
+        # with learnable parameters, for training
         norm_layer = functools.partial(nn.BatchNorm2d, affine=True)
     elif norm_type == 'instance':
+        # without learnable parameters, for testing
         norm_layer = functools.partial(nn.InstanceNorm2d, affine=False)
     else:
-        raise NotImplementedError('normalization layer [%s] is not found' % norm)
+        raise NotImplementedError('normalization layer [%s] is not found' % norm_type)
     return norm_layer
 
 
@@ -54,8 +56,8 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
     return netG
 
 
-def define_D(input_nc, ndf, which_model_netD,
-             n_layers_D=3, norm='batch', use_sigmoid=False, gpu_ids=[]):
+def define_D(input_nc, ndf,
+             which_model_netD = 'basic', n_layers_D=3, norm='batch', use_sigmoid=False, gpu_ids=[]):
     netD = None
     use_gpu = len(gpu_ids) > 0
     norm_layer = get_norm_layer(norm_type=norm)
@@ -328,8 +330,7 @@ class NLayerDiscriminator(nn.Module):
         padw = int(np.ceil((kw-1)/2))
         sequence = [
             nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw),
-            nn.LeakyReLU(0.2, True)
-        ]
+            nn.LeakyReLU(0.2, True)]
 
         nf_mult = 1
         nf_mult_prev = 1
@@ -359,8 +360,8 @@ class NLayerDiscriminator(nn.Module):
 
         self.model = nn.Sequential(*sequence)
 
-    def forward(self, input):
-        if len(self.gpu_ids) and isinstance(input.data, torch.cuda.FloatTensor):
-            return nn.parallel.data_parallel(self.model, input, self.gpu_ids)
+    def forward(self, inp):
+        if len(self.gpu_ids) and isinstance(inp.data, torch.cuda.FloatTensor):
+            return nn.parallel.data_parallel(self.model, inp, self.gpu_ids)
         else:
-            return self.model(input)
+            return self.model(inp)
