@@ -22,6 +22,11 @@ def CreateDataset(opt):
 
 
 class CustomDatasetDataLoader(BaseDataLoader):
+    def __init__(self):
+        BaseDataLoader.__init__(self)
+        self.dataloader = None
+        self.dataset = None
+
     def name(self):
         return 'CustomDatasetDataLoader'
 

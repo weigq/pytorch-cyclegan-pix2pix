@@ -108,27 +108,26 @@ class GANLoss(nn.Module):
         else:
             self.loss = nn.BCELoss()
 
-    def get_target_tensor(self, input, target_is_real):
-        target_tensor = None
+    def get_target_tensor(self, inp, target_is_real):
         if target_is_real:
             create_label = ((self.real_label_var is None) or
-                            (self.real_label_var.numel() != input.numel()))
+                            (self.real_label_var.numel() != inp.numel()))
             if create_label:
-                real_tensor = self.Tensor(input.size()).fill_(self.real_label)
+                real_tensor = self.Tensor(inp.size()).fill_(self.real_label)
                 self.real_label_var = Variable(real_tensor, requires_grad=False)
             target_tensor = self.real_label_var
         else:
             create_label = ((self.fake_label_var is None) or
-                            (self.fake_label_var.numel() != input.numel()))
+                            (self.fake_label_var.numel() != inp.numel()))
             if create_label:
-                fake_tensor = self.Tensor(input.size()).fill_(self.fake_label)
+                fake_tensor = self.Tensor(inp.size()).fill_(self.fake_label)
                 self.fake_label_var = Variable(fake_tensor, requires_grad=False)
             target_tensor = self.fake_label_var
         return target_tensor
 
-    def __call__(self, input, target_is_real):
-        target_tensor = self.get_target_tensor(input, target_is_real)
-        return self.loss(input, target_tensor)
+    def __call__(self, inp, target_is_real):
+        target_tensor = self.get_target_tensor(inp, target_is_real)
+        return self.loss(inp, target_tensor)
 
 
 # Defines the generator that consists of Resnet blocks between a few

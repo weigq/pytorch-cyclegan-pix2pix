@@ -25,6 +25,15 @@ class Pix2PixModel(BaseModel):
 
         self.netD = None  # D
         self.optimizer_D = None
+        self.loss_D_fake = None
+        self.loss_D_real = None
+
+        self.pred_fake = None
+        self.pred_real = None
+
+        # loss
+        self.criterionGAN = None
+        self.criterionL1 = None
 
     def name(self):
         return 'Pix2PixModel'
@@ -92,13 +101,23 @@ class Pix2PixModel(BaseModel):
     def backward_D(self):
         # Fake
         # stop backprop to the generator by detaching fake_B
+        # real_A/B: Nx3x256x256
         fake_AB = self.fake_AB_pool.query(torch.cat((self.real_A, self.fake_B), 1))
+        # fake_AB: Nx6x256x256
+        # pred_fake: Nx1x30x30
         self.pred_fake = self.netD.forward(fake_AB.detach())
         self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
 
         # Real
+        # print("a/b.{}.{}".format(self.real_A.size(), self.real_B.size()))
         real_AB = torch.cat((self.real_A, self.real_B), 1)
+        # print("real.{}".format(real_AB))
+        # raw_input(">>")
         self.pred_real = self.netD.forward(real_AB)
+        # self.pred_real.size() = 1x1x30x30
+        # print("out.{}".format(self.pred_real))
+        # raw_input(">>")
+
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
 
         # Combined loss
