@@ -34,9 +34,17 @@ class Pix2PixModel(BaseModel):
         # loss
         self.criterionGAN = None
         self.criterionL1 = None
+        self.loss_D = None
+        self.loss_G_GAN = None
+        self.loss_G = None
+        self.loss_G_L1 = None
+
+        self.old_lr = None
+
+        self.fake_AB_pool = None
 
     def name(self):
-        return 'Pix2PixModel'
+        return 'Pix2Pix Model'
 
     def initialize(self, opt):
         BaseModel.initialize(self, opt)
@@ -86,6 +94,8 @@ class Pix2PixModel(BaseModel):
     def forward(self):
         self.real_A = Variable(self.input_A)
         self.fake_B = self.netG.forward(self.real_A)
+        print (self.fake_B)
+        raw_input(">>")
         self.real_B = Variable(self.input_B)
 
     # no backprop gradients: volatile=True
@@ -112,7 +122,7 @@ class Pix2PixModel(BaseModel):
         # print("a/b.{}.{}".format(self.real_A.size(), self.real_B.size()))
         real_AB = torch.cat((self.real_A, self.real_B), 1)
         # print("real.{}".format(real_AB))
-        # raw_input(">>")
+        # raw_input(">>")l
         self.pred_real = self.netD.forward(real_AB)
         # self.pred_real.size() = 1x1x30x30
         # print("out.{}".format(self.pred_real))
