@@ -2,12 +2,14 @@
 
 import time
 from options.train_options import TrainOptions
-from data.data_loader import CreateDataLoader
+
+from data.data_loader import create_dataloader
+
 from models.models import create_model
 from util.visualizer import Visualizer
 
 opt = TrainOptions().parse()
-data_loader = CreateDataLoader(opt)
+data_loader = create_dataloader(opt)
 dataset = data_loader.load_data()
 dataset_size = len(data_loader)
 print('#training set size = {} images'.format(dataset_size))
